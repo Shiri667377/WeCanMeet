@@ -21,6 +21,11 @@ public class Group {
     public Group() {
     }
 
+    public Group(String name, String creatorName) {
+        this.name = name;
+        this.creatorName = creatorName;
+    }
+
     public Long getId() {
         return id;
     }
