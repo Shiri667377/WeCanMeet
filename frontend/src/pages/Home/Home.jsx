@@ -1,5 +1,6 @@
 import './Home.css'
 import { Link } from 'react-router-dom'
+import { FiPlusCircle, FiShare2, FiUsers } from 'react-icons/fi'
 
 function Home() {
   return (
@@ -24,23 +25,35 @@ function Home() {
           <button className="secondary-button">Join a group</button>
         </div>
       </section>
-
       <section className="steps">
         <div className="step-card">
-          <span>01</span>
-          <h3>Create</h3>
+          <div className="step-title">
+            <FiPlusCircle className="step-icon" />
+            <h3>Create</h3>
+          </div>
+
           <p>Set up your group and meeting preferences.</p>
         </div>
 
+        <div className="step-arrow">→</div>
+
         <div className="step-card">
-          <span>02</span>
-          <h3>Share</h3>
+          <div className="step-title">
+            <FiShare2 className="step-icon" />
+            <h3>Share</h3>
+          </div>
+
           <p>Send one simple link to everyone.</p>
         </div>
 
+        <div className="step-arrow">→</div>
+
         <div className="step-card">
-          <span>03</span>
-          <h3>Meet</h3>
+          <div className="step-title">
+            <FiUsers className="step-icon" />
+            <h3>Meet</h3>
+          </div>
+
           <p>See the times that work best for the group.</p>
         </div>
       </section>
