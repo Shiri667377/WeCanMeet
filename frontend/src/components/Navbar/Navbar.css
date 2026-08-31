@@ -1,24 +1,37 @@
 .navbar {
-  max-width: 1180px;
-  margin: 0 auto;
-  padding: 24px 32px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
+    max-width: 1180px;
+    margin: 0 auto;
+    padding: 24px 32px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
 }
 
 .logo {
-  font-size: 22px;
-  font-weight: 700;
-  color: #1f2937;
-  text-decoration: none;
+    font-size: 22px;
+    font-weight: 700;
+    color: #1f2937;
+    text-decoration: none;
 }
+
 .nav-links {
-  display: flex;
-  gap: 28px;
+    display: flex;
+    gap: 28px;
 }
 
 .nav-links a {
-  color: #64748b;
-  text-decoration: none;
+    color: #64748b;
+    text-decoration: none;
+}
+
+.nav-link {
+    color: #64748b;
+    text-decoration: none;
+    padding-bottom: 6px;
+}
+
+.nav-link.active {
+    color: #6d5dfc;
+    font-weight: 600;
+    border-bottom: 2px solid #6d5dfc;
 }

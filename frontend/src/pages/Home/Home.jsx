@@ -23,9 +23,9 @@ function Home() {
             <FiPlusCircle className="button-icon" />
             Create a group
           </Link>
-          <button className="secondary-button">Join a group</button>
         </div>
       </section>
+
       <section id="how-it-works" className="steps">
         <div className="step-card">
           <div className="step-title">
@@ -57,6 +57,12 @@ function Home() {
 
           <p>See the times that work best for the group.</p>
         </div>
+      </section>
+      <section className="product-preview">
+        <img
+          src="/hero-illustration.png"
+          alt="WeCanMeet scheduling preview"
+        />
       </section>
     </main>
   )
