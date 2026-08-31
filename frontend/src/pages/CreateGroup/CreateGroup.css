@@ -1,0 +1,169 @@
+.create-group-page {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 70px 32px;
+}
+
+.create-group-card {
+    max-width: 720px;
+    margin: 0 auto;
+    padding: 48px;
+    background: white;
+    border: 1px solid #e8edf3;
+    border-radius: 20px;
+}
+
+.create-group-header {
+    margin-bottom: 40px;
+}
+
+.create-group-header .eyebrow {
+    margin-bottom: 10px;
+}
+
+.create-group-header h1 {
+    margin: 0;
+    font-size: 36px;
+    letter-spacing: -1px;
+}
+
+.create-group-description {
+    margin-top: 14px;
+    color: #64748b;
+    font-size: 16px;
+    line-height: 1.6;
+}
+
+.create-group-form {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+}
+
+.form-field {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.form-field label {
+    font-size: 14px;
+    font-weight: 600;
+    color: #334155;
+}
+
+.form-field input,
+.form-field select {
+    width: 100%;
+    padding: 13px 14px;
+    border: 1px solid #dbe2ea;
+    border-radius: 10px;
+    background: white;
+    color: #1f2937;
+    font-size: 15px;
+    outline: none;
+}
+
+.form-field input:focus,
+.form-field select:focus {
+    border-color: #6d5dfc;
+}
+
+.form-actions {
+    margin-top: 12px;
+    display: flex;
+    justify-content: flex-end;
+    gap: 12px;
+}
+
+/* Date range */
+
+.date-range {
+    display: flex;
+    gap: 16px;
+    width: 100%;
+}
+
+.date-input {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.date-input label {
+    font-size: 13px;
+    font-weight: 500;
+    color: #64748b;
+}
+
+.date-input input {
+    width: 100%;
+}
+
+.react-datepicker-wrapper {
+    width: 100%;
+}
+
+.react-datepicker__input-container {
+    width: 100%;
+}
+
+.react-datepicker__input-container input {
+    width: 100%;
+    padding: 13px 14px;
+    border: 1px solid #dbe2ea;
+    border-radius: 10px;
+    background: white;
+    color: #1f2937;
+    font-size: 15px;
+    outline: none;
+}
+
+.react-datepicker__input-container input:focus {
+    border-color: #6d5dfc;
+}
+
+.react-datepicker {
+    border: 1px solid #e2e8f0;
+    border-radius: 14px;
+    font-family: inherit;
+    overflow: hidden;
+}
+
+.react-datepicker__header {
+    background: #f8fafc;
+    border-bottom: 1px solid #e2e8f0;
+}
+
+.react-datepicker__day--selected,
+.react-datepicker__day--in-range {
+    background: #6d5dfc;
+}
+
+.react-datepicker__day--keyboard-selected {
+    background: #ede9fe;
+    color: #1f2937;
+}
+
+/* Mobile */
+
+@media (max-width: 700px) {
+    .create-group-page {
+        padding: 40px 20px;
+    }
+
+    .create-group-card {
+        padding: 28px 22px;
+    }
+
+    .form-actions {
+        flex-direction: column-reverse;
+    }
+
+    .date-range {
+        flex-direction: column;
+    }
+
+}
