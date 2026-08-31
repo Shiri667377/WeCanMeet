@@ -147,6 +147,19 @@
     color: #1f2937;
 }
 
+.form-error {
+    margin: 0;
+    color: #dc2626;
+    font-size: 14px;
+}
+
+.cancel-link {
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
 /* Mobile */
 
 @media (max-width: 700px) {
