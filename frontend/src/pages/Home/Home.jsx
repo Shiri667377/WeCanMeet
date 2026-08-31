@@ -20,12 +20,13 @@ function Home() {
 
         <div className="hero-actions">
           <Link to="/create-group" className="primary-button">
+            <FiPlusCircle className="button-icon" />
             Create a group
           </Link>
           <button className="secondary-button">Join a group</button>
         </div>
       </section>
-      <section className="steps">
+      <section id="how-it-works" className="steps">
         <div className="step-card">
           <div className="step-title">
             <FiPlusCircle className="step-icon" />

@@ -54,9 +54,22 @@
 
 .primary-button {
     border: none;
-    background: #1f2937;
+    background: #6d5dfc;
     color: white;
     text-decoration: none;
+
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.button-icon {
+    width: 18px;
+    height: 18px;
+}
+
+.primary-button:hover {
+    background: #5b4ce0;
 }
 
 .secondary-button {

@@ -1,13 +1,16 @@
+import { Link } from 'react-router-dom'
 import './Navbar.css'
 
 function Navbar() {
   return (
     <nav className="navbar">
-      <div className="logo">WeCanMeet</div>
+      <Link to="/" className="logo">
+        WeCanMeet
+      </Link>
 
       <div className="nav-links">
-        <a href="#">Home</a>
-        <a href="#">How it works</a>
+        <Link to="/">Home</Link>
+        <a href="#how-it-works">How it works</a>
       </div>
     </nav>
   )

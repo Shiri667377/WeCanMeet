@@ -10,8 +10,9 @@
 .logo {
   font-size: 22px;
   font-weight: 700;
+  color: #1f2937;
+  text-decoration: none;
 }
-
 .nav-links {
   display: flex;
   gap: 28px;
