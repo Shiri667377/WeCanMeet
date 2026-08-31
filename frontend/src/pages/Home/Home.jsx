@@ -1,4 +1,5 @@
 import './Home.css'
+import { Link } from 'react-router-dom'
 
 function Home() {
   return (
@@ -17,7 +18,9 @@ function Home() {
         </p>
 
         <div className="hero-actions">
-          <button className="primary-button">Create a group</button>
+          <Link to="/create-group" className="primary-button">
+            Create a group
+          </Link>
           <button className="secondary-button">Join a group</button>
         </div>
       </section>

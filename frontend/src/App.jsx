@@ -1,12 +1,12 @@
 import Navbar from './components/Navbar/Navbar'
-import Home from './pages/Home/Home'
+import AppRoutes from './routes/AppRoutes'
 import './App.css'
 
 function App() {
   return (
     <div className="app">
       <Navbar />
-      <Home />
+      <AppRoutes />
     </div>
   )
 }
