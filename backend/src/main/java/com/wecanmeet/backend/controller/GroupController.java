@@ -4,8 +4,15 @@ import com.wecanmeet.backend.service.GroupService;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.wecanmeet.backend.model.Group;
+
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+
+import java.util.Optional;
+
+import org.springframework.http.ResponseEntity;
 
 @RestController
 public class GroupController {
@@ -18,5 +25,16 @@ public class GroupController {
     @PostMapping("/groups")
     public Group createGroup(@RequestBody Group group) {
         return groupService.createGroup(group);
+    }
+
+    @GetMapping("/groups/{id}")
+    public ResponseEntity<Group> getGroupById(@PathVariable Long id) {
+        Optional<Group> group = groupService.getGroupById(id);
+
+        if (group.isPresent()) {
+            return ResponseEntity.ok(group.get());
+        }
+
+        return ResponseEntity.notFound().build();
     }
 }
