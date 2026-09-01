@@ -8,9 +8,12 @@ import { useNavigate } from 'react-router-dom'
 function CreateGroup() {
   const [groupName, setGroupName] = useState('')
   const [meetingDuration, setMeetingDuration] = useState('60')
+  const [customDuration, setCustomDuration] = useState('')
+  const [customUnit, setCustomUnit] = useState('hours')
   const [startDate, setStartDate] = useState(null)
   const [endDate, setEndDate] = useState(null)
   const [error, setError] = useState('')
+
   const navigate = useNavigate()
 
   function handleSubmit(event) {
@@ -33,9 +36,28 @@ function CreateGroup() {
 
     setError('')
 
+    let durationInMinutes
+
+    if (meetingDuration === 'other') {
+      durationInMinutes =
+        customUnit === 'hours'
+          ? Number(customDuration) * 60
+          : Number(customDuration)
+    } else {
+      durationInMinutes = Number(meetingDuration)
+    }
+
+    if (
+      meetingDuration === 'other' &&
+      (!customDuration || Number(customDuration) <= 0)
+    ) {
+      setError('Please enter a valid meeting duration.')
+      return
+    }
+
     const groupData = {
       name: groupName.trim(),
-      meetingDuration: Number(meetingDuration),
+      meetingDuration: durationInMinutes,
       startDate,
       endDate,
     }
@@ -69,7 +91,10 @@ function CreateGroup() {
           </div>
 
           <div className="form-field">
-            <label htmlFor="meetingDuration">Meeting duration</label>
+            <label htmlFor="meetingDuration">Minimum Meeting duration</label>
+            <p className="field-help">
+              We'll look for time slots that are at least this long.
+            </p>
 
             <select
               id="meetingDuration"
@@ -81,7 +106,30 @@ function CreateGroup() {
               <option value="60">1 hour</option>
               <option value="90">1.5 hours</option>
               <option value="120">2 hours</option>
+              <option value="180">3 hours</option>
+              <option value="other">Other...</option>
             </select>
+
+            {meetingDuration === 'other' && (
+              <div className="custom-duration">
+                <input
+                  type="number"
+                  min="0.5"
+                  step="0.5"
+                  placeholder="Duration"
+                  value={customDuration}
+                  onChange={(event) => setCustomDuration(event.target.value)}
+                />
+
+                <select
+                  value={customUnit}
+                  onChange={(event) => setCustomUnit(event.target.value)}
+                >
+                  <option value="hours">Hours</option>
+                  <option value="minutes">Minutes</option>
+                </select>
+              </div>
+            )}
           </div>
 
           <div className="form-field">
