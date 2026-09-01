@@ -5,6 +5,7 @@ import { useState } from 'react'
 import { useEffect } from 'react'
 import { useLocation } from 'react-router-dom'
 import confetti from 'canvas-confetti'
+import { Link } from 'react-router-dom'
 
 function GroupPage() {
     const [copied, setCopied] = useState(false)
@@ -110,6 +111,16 @@ function GroupPage() {
                             Share
                         </button>
                     </div>
+                </div>
+
+                <div className="group-actions">
+                    <Link
+                        to="/group/1/availability"
+                        state={{ group }}
+                        className="primary-button"
+                    >
+                        Add my availability
+                    </Link>
                 </div>
             </section>
         </main>

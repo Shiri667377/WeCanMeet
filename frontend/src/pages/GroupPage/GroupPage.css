@@ -89,12 +89,6 @@
     font-size: 14px;
 }
 
-.group-actions {
-    margin-top: 32px;
-    display: flex;
-    justify-content: flex-end;
-}
-
 .copy-button {
     border: 1px solid #d8d4ff;
     background: #f5f3ff;
@@ -151,6 +145,12 @@
 .share-option svg {
     width: 18px;
     height: 18px;
+}
+
+.group-actions {
+    margin-top: 40px;
+    display: flex;
+    justify-content: flex-start;
 }
 
 

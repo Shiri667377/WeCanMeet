@@ -167,13 +167,6 @@
     margin-top: 10px;
 }
 
-.custom-duration {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 12px;
-    margin-top: 10px;
-}
-
 .field-help {
     margin: 0;
     color: #64748b;
