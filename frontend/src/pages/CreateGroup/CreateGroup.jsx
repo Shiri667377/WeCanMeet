@@ -3,6 +3,7 @@ import DatePicker from 'react-datepicker'
 import 'react-datepicker/dist/react-datepicker.css'
 import './CreateGroup.css'
 import { Link } from 'react-router-dom'
+import { useNavigate } from 'react-router-dom'
 
 function CreateGroup() {
   const [groupName, setGroupName] = useState('')
@@ -10,6 +11,7 @@ function CreateGroup() {
   const [startDate, setStartDate] = useState(null)
   const [endDate, setEndDate] = useState(null)
   const [error, setError] = useState('')
+  const navigate = useNavigate()
 
   function handleSubmit(event) {
     event.preventDefault()
@@ -39,6 +41,8 @@ function CreateGroup() {
     }
 
     console.log(groupData)
+
+    navigate('/group/1')
   }
 
   return (
