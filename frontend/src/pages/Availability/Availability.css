@@ -348,7 +348,19 @@
     margin-top: 32px;
 
     display: flex;
-    justify-content: flex-end;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 10px;
+}
+
+.availability-field-error {
+    margin-top: 10px;
+}
+
+.save-error {
+    margin: 0;
+    max-width: 340px;
+    text-align: right;
 }
 
 .save-availability-button {

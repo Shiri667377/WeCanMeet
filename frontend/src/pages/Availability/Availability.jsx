@@ -5,7 +5,6 @@ import 'react-datepicker/dist/react-datepicker.css'
 import './Availability.css'
 
 import {
-    FiPlus,
     FiEdit2,
     FiTrash2,
     FiSave,
@@ -18,8 +17,6 @@ function Availability() {
     const group = location.state?.group
 
     const [participantName, setParticipantName] = useState('')
-
-    // Multiple selected days
     const [selectedDates, setSelectedDates] = useState([])
 
     const [availabilityType, setAvailabilityType] = useState('range')
@@ -32,7 +29,17 @@ function Availability() {
     const [availability, setAvailability] = useState({})
     const [editingRange, setEditingRange] = useState(null)
 
-    const [error, setError] = useState('')
+    const [nameError, setNameError] = useState('')
+    const [dateError, setDateError] = useState('')
+    const [timeError, setTimeError] = useState('')
+    const [saveError, setSaveError] = useState('')
+
+    function clearErrors() {
+        setNameError('')
+        setDateError('')
+        setTimeError('')
+        setSaveError('')
+    }
 
     function getDateKey(date) {
         const year = date.getFullYear()
@@ -51,8 +58,6 @@ function Availability() {
     }
 
     function toggleDate(date) {
-        // While editing an existing entry,
-        // keep its original date selected.
         if (editingRange) {
             return
         }
@@ -75,7 +80,9 @@ function Availability() {
             return [...current, date]
         })
 
-        setError('')
+        setDateError('')
+        setTimeError('')
+        setSaveError('')
     }
 
     function isDateSelected(date) {
@@ -88,26 +95,47 @@ function Availability() {
     }
 
     function validateAvailability() {
+        setTimeError('')
+
         if (availabilityType === 'range') {
             if (!startTime || !endTime) {
-                setError('Please select a start and end time.')
+                setTimeError(
+                    'Please select a start and end time.'
+                )
                 return false
             }
 
             if (startTime >= endTime) {
-                setError('End time must be after start time.')
+                setTimeError(
+                    'End time must be after start time.'
+                )
                 return false
             }
         }
 
-        if (availabilityType === 'from' && !startTime) {
-            setError('Please select a start time.')
-            return false
+        if (availabilityType === 'from') {
+            if (!startTime) {
+                setTimeError(
+                    'Please select a start time.'
+                )
+                return false
+            }
         }
 
-        if (availabilityType === 'until' && !endTime) {
-            setError('Please select an end time.')
-            return false
+        if (availabilityType === 'until') {
+            if (!endTime) {
+                setTimeError(
+                    'Please select an end time.'
+                )
+                return false
+            }
+
+            if (endTime === '00:00') {
+                setTimeError(
+                    'Available until 00:00 does not create an available time range.'
+                )
+                return false
+            }
         }
 
         return true
@@ -141,9 +169,61 @@ function Availability() {
         }
     }
 
+    function timeToMinutes(time) {
+        const [hours, minutes] = time
+            .split(':')
+            .map(Number)
+
+        return hours * 60 + minutes
+    }
+
+    function getRangeBounds(range) {
+        if (range.type === 'allDay') {
+            return {
+                start: 0,
+                end: 24 * 60,
+            }
+        }
+
+        if (range.type === 'from') {
+            return {
+                start: timeToMinutes(range.startTime),
+                end: 24 * 60,
+            }
+        }
+
+        if (range.type === 'until') {
+            return {
+                start: 0,
+                end: timeToMinutes(range.endTime),
+            }
+        }
+
+        return {
+            start: timeToMinutes(range.startTime),
+            end: timeToMinutes(range.endTime),
+        }
+    }
+
+    function rangesOverlap(rangeA, rangeB) {
+        const a = getRangeBounds(rangeA)
+        const b = getRangeBounds(rangeB)
+
+        return (
+            a.start < b.end &&
+            b.start < a.end
+        )
+    }
+
     function addAvailability() {
+        setDateError('')
+        setTimeError('')
+        setSaveError('')
+
         if (selectedDates.length === 0) {
-            setError('Please select at least one day.')
+            setDateError(
+                'Please select at least one day.'
+            )
             return
         }
 
@@ -153,34 +233,97 @@ function Availability() {
 
         const newRange = createRange()
 
-        // Editing one existing entry
+        /*
+         * Editing an existing availability
+         */
         if (editingRange) {
+            const existingRanges =
+                availability[editingRange.date] || []
+
+            const hasOverlap = existingRanges.some(
+                (range, index) =>
+                    index !== editingRange.index &&
+                    rangesOverlap(range, newRange)
+            )
+
+            if (hasOverlap) {
+                setTimeError(
+                    'This availability overlaps with another time on this day.'
+                )
+                return
+            }
+
             setAvailability((current) => {
                 const updatedRanges = [
                     ...current[editingRange.date]
                 ]
 
-                updatedRanges[editingRange.index] = newRange
+                updatedRanges[editingRange.index] =
+                    newRange
 
                 return {
                     ...current,
-                    [editingRange.date]: updatedRanges,
+                    [editingRange.date]:
+                        updatedRanges,
                 }
             })
         }
 
-        // Adding the same availability to every selected day
+        /*
+         * Adding availability to one or more days
+         */
         else {
+            const conflictingDates =
+                selectedDates.filter((date) => {
+                    const dateKey =
+                        getDateKey(date)
+
+                    const existingRanges =
+                        availability[dateKey] || []
+
+                    return existingRanges.some(
+                        (range) =>
+                            rangesOverlap(
+                                range,
+                                newRange
+                            )
+                    )
+                })
+
+            if (conflictingDates.length > 0) {
+                const formattedDates =
+                    conflictingDates
+                        .map((date) =>
+                            date.toLocaleDateString(
+                                'en-US',
+                                {
+                                    month: 'short',
+                                    day: 'numeric',
+                                }
+                            )
+                        )
+                        .join(', ')
+
+                setTimeError(
+                    `This availability overlaps with an existing time on: ${formattedDates}.`
+                )
+
+                return
+            }
+
             setAvailability((current) => {
                 const updatedAvailability = {
                     ...current,
                 }
 
                 selectedDates.forEach((date) => {
-                    const dateKey = getDateKey(date)
+                    const dateKey =
+                        getDateKey(date)
 
                     updatedAvailability[dateKey] = [
-                        ...(updatedAvailability[dateKey] || []),
+                        ...(updatedAvailability[
+                            dateKey
+                        ] || []),
                         newRange,
                     ]
                 })
@@ -189,15 +332,18 @@ function Availability() {
             })
         }
 
-        setError('')
         resetTimeForm()
         setSelectedDates([])
+        setDateError('')
+        setTimeError('')
     }
 
     function editAvailability(date, index) {
-        const range = availability[date][index]
+        const range =
+            availability[date][index]
 
-        const [year, month, day] = date.split('-')
+        const [year, month, day] =
+            date.split('-')
 
         const dateObject = new Date(
             Number(year),
@@ -205,32 +351,31 @@ function Availability() {
             Number(day)
         )
 
-        // Editing always works on one entry / one day
         setSelectedDates([dateObject])
 
         setAvailabilityType(range.type)
         setStartTime(range.startTime || '')
         setEndTime(range.endTime || '')
 
-        if (range.type !== 'range') {
-            setShowMoreOptions(true)
-        } else {
-            setShowMoreOptions(false)
-        }
+        setShowMoreOptions(
+            range.type !== 'range'
+        )
 
         setEditingRange({
             date,
             index,
         })
 
-        setError('')
+        clearErrors()
     }
 
     function deleteAvailability(date, index) {
         setAvailability((current) => {
-            const updatedRanges = current[date].filter(
-                (_, rangeIndex) => rangeIndex !== index
-            )
+            const updatedRanges =
+                current[date].filter(
+                    (_, rangeIndex) =>
+                        rangeIndex !== index
+                )
 
             const updatedAvailability = {
                 ...current,
@@ -239,7 +384,8 @@ function Availability() {
             if (updatedRanges.length === 0) {
                 delete updatedAvailability[date]
             } else {
-                updatedAvailability[date] = updatedRanges
+                updatedAvailability[date] =
+                    updatedRanges
             }
 
             return updatedAvailability
@@ -252,31 +398,65 @@ function Availability() {
             resetTimeForm()
             setSelectedDates([])
         }
+
+        clearErrors()
     }
 
     function cancelEdit() {
         resetTimeForm()
         setSelectedDates([])
-        setError('')
+        clearErrors()
     }
 
     function saveAvailability(event) {
         event.preventDefault()
 
+        setNameError('')
+        setDateError('')
+        setTimeError('')
+        setSaveError('')
+
         if (!participantName.trim()) {
-            setError('Please enter your name.')
+            setNameError(
+                'Please enter your name.'
+            )
             return
         }
 
-        if (Object.keys(availability).length === 0) {
-            setError('Please add at least one available time.')
+        if (
+            Object.keys(availability).length === 0
+        ) {
+            setSaveError(
+                'Please add at least one available time.'
+            )
             return
         }
 
-        setError('')
+        if (editingRange) {
+            setTimeError(
+                'Please update or cancel your current edit before saving.'
+            )
+            return
+        }
+
+        const hasUnaddedSelection =
+            selectedDates.length > 0 &&
+            (
+                startTime !== '' ||
+                endTime !== '' ||
+                availabilityType !== 'range'
+            )
+
+        if (hasUnaddedSelection) {
+            setTimeError(
+                'Please add your current availability before saving.'
+            )
+            return
+        }
 
         const data = {
-            participantName: participantName.trim(),
+            participantName:
+                participantName.trim(),
             availability,
         }
 
@@ -300,7 +480,8 @@ function Availability() {
     }
 
     function formatDate(dateString) {
-        const [year, month, day] = dateString.split('-')
+        const [year, month, day] =
+            dateString.split('-')
 
         const date = new Date(
             Number(year),
@@ -308,12 +489,15 @@ function Availability() {
             Number(day)
         )
 
-        return date.toLocaleDateString('en-US', {
-            weekday: 'long',
-            month: 'short',
-            day: 'numeric',
-            year: 'numeric',
-        })
+        return date.toLocaleDateString(
+            'en-US',
+            {
+                weekday: 'long',
+                month: 'short',
+                day: 'numeric',
+                year: 'numeric',
+            }
+        )
     }
 
     function getSelectionTitle() {
@@ -322,7 +506,15 @@ function Availability() {
         }
 
         if (selectedDates.length === 1) {
-            return selectedDates[0].toLocaleDateString()
+            return selectedDates[0]
+                .toLocaleDateString(
+                    'en-US',
+                    {
+                        weekday: 'long',
+                        month: 'short',
+                        day: 'numeric',
+                    }
+                )
         }
 
         return `${selectedDates.length} days selected`
@@ -346,6 +538,8 @@ function Availability() {
 
                 <form onSubmit={saveAvailability}>
 
+                    {/* Name */}
+
                     <div className="form-field">
                         <label htmlFor="participantName">
                             Your name
@@ -356,13 +550,26 @@ function Availability() {
                             type="text"
                             placeholder="Enter your name"
                             value={participantName}
-                            onChange={(event) =>
-                                setParticipantName(event.target.value)
-                            }
+                            onChange={(event) => {
+                                setParticipantName(
+                                    event.target.value
+                                )
+
+                                setNameError('')
+                                setSaveError('')
+                            }}
                         />
+
+                        {nameError && (
+                            <p className="form-error">
+                                {nameError}
+                            </p>
+                        )}
                     </div>
 
                     <div className="availability-content">
+
+                        {/* Calendar */}
 
                         <div className="availability-calendar">
                             <h2>Choose days</h2>
@@ -378,7 +585,15 @@ function Availability() {
                                 }
                                 inline
                             />
+
+                            {dateError && (
+                                <p className="form-error availability-field-error">
+                                    {dateError}
+                                </p>
+                            )}
                         </div>
+
+                        {/* Time selection */}
 
                         <div className="time-selection">
 
@@ -401,11 +616,13 @@ function Availability() {
                                                     id="startTime"
                                                     type="time"
                                                     value={startTime}
-                                                    onChange={(event) =>
+                                                    onChange={(event) => {
                                                         setStartTime(
                                                             event.target.value
                                                         )
-                                                    }
+                                                        setTimeError('')
+                                                        setSaveError('')
+                                                    }}
                                                 />
                                             </div>
 
@@ -418,11 +635,13 @@ function Availability() {
                                                     id="endTime"
                                                     type="time"
                                                     value={endTime}
-                                                    onChange={(event) =>
+                                                    onChange={(event) => {
                                                         setEndTime(
                                                             event.target.value
                                                         )
-                                                    }
+                                                        setTimeError('')
+                                                        setSaveError('')
+                                                    }}
                                                 />
                                             </div>
 
@@ -440,15 +659,19 @@ function Availability() {
                                                 id="startTime"
                                                 type="time"
                                                 value={startTime}
-                                                onChange={(event) =>
+                                                onChange={(event) => {
                                                     setStartTime(
                                                         event.target.value
                                                     )
-                                                }
+                                                    setTimeError('')
+                                                    setSaveError('')
+                                                }}
                                             />
+
                                             <p className="availability-help">
                                                 From this time until the end of the day.
                                             </p>
+
                                         </div>
                                     )}
 
@@ -463,11 +686,13 @@ function Availability() {
                                                 id="endTime"
                                                 type="time"
                                                 value={endTime}
-                                                onChange={(event) =>
+                                                onChange={(event) => {
                                                     setEndTime(
                                                         event.target.value
                                                     )
-                                                }
+                                                    setTimeError('')
+                                                    setSaveError('')
+                                                }}
                                             />
 
                                             <p className="availability-help">
@@ -488,7 +713,8 @@ function Availability() {
                                         className="more-options-button"
                                         onClick={() =>
                                             setShowMoreOptions(
-                                                (current) => !current
+                                                (current) =>
+                                                    !current
                                             )
                                         }
                                     >
@@ -507,9 +733,10 @@ function Availability() {
                                                         ? 'availability-option active'
                                                         : 'availability-option'
                                                 }
-                                                onClick={() =>
+                                                onClick={() => {
                                                     setAvailabilityType('range')
-                                                }
+                                                    setTimeError('')
+                                                }}
                                             >
                                                 Specific hours
                                             </button>
@@ -521,9 +748,10 @@ function Availability() {
                                                         ? 'availability-option active'
                                                         : 'availability-option'
                                                 }
-                                                onClick={() =>
+                                                onClick={() => {
                                                     setAvailabilityType('from')
-                                                }
+                                                    setTimeError('')
+                                                }}
                                             >
                                                 Available from
                                             </button>
@@ -535,9 +763,10 @@ function Availability() {
                                                         ? 'availability-option active'
                                                         : 'availability-option'
                                                 }
-                                                onClick={() =>
+                                                onClick={() => {
                                                     setAvailabilityType('until')
-                                                }
+                                                    setTimeError('')
+                                                }}
                                             >
                                                 Available until
                                             </button>
@@ -549,14 +778,21 @@ function Availability() {
                                                         ? 'availability-option active'
                                                         : 'availability-option'
                                                 }
-                                                onClick={() =>
+                                                onClick={() => {
                                                     setAvailabilityType('allDay')
-                                                }
+                                                    setTimeError('')
+                                                }}
                                             >
                                                 Available all day
                                             </button>
 
                                         </div>
+                                    )}
+
+                                    {timeError && (
+                                        <p className="form-error availability-field-error">
+                                            {timeError}
+                                        </p>
                                     )}
 
                                     <div className="time-actions">
@@ -570,19 +806,13 @@ function Availability() {
                                             }
                                             onClick={addAvailability}
                                         >
-                                            {editingRange ? (
-                                                <>
-                                                    <FiCheck />
-                                                    Update availability
-                                                </>
-                                            ) : (
-                                                <>
-                                                    <FiCheck />
-                                                    {selectedDates.length > 1
-                                                        ? `Add availability to ${selectedDates.length} days`
-                                                        : 'Add availability'}
-                                                </>
-                                            )}
+                                            <FiCheck />
+
+                                            {editingRange
+                                                ? 'Update availability'
+                                                : selectedDates.length > 1
+                                                    ? `Add availability to ${selectedDates.length} days`
+                                                    : 'Add availability'}
                                         </button>
 
                                         {editingRange && (
@@ -603,13 +833,19 @@ function Availability() {
                         </div>
                     </div>
 
+                    {/* Saved availability */}
+
                     {Object.keys(availability).length > 0 && (
                         <div className="availability-summary">
 
                             <h2>Your selected times</h2>
 
-                            {Object.entries(availability).map(
-                                ([date, ranges]) => (
+                            {Object.entries(availability)
+                                .sort(
+                                    ([dateA], [dateB]) =>
+                                        dateA.localeCompare(dateB)
+                                )
+                                .map(([date, ranges]) => (
                                     <div
                                         className="availability-day"
                                         key={date}
@@ -621,57 +857,63 @@ function Availability() {
 
                                         <div className="availability-ranges">
 
-                                            {ranges.map((range, index) => (
-                                                <div
-                                                    className="saved-range"
-                                                    key={index}
-                                                >
+                                            {ranges.map(
+                                                (range, index) => (
+                                                    <div
+                                                        className="saved-range"
+                                                        key={index}
+                                                    >
+                                                        <span>
+                                                            {formatRange(range)}
+                                                        </span>
 
-                                                    <span>
-                                                        {formatRange(range)}
-                                                    </span>
+                                                        <div className="range-actions">
 
-                                                    <div className="range-actions">
+                                                            <button
+                                                                type="button"
+                                                                className="edit-range-button"
+                                                                onClick={() =>
+                                                                    editAvailability(
+                                                                        date,
+                                                                        index
+                                                                    )
+                                                                }
+                                                            >
+                                                                <FiEdit2 />
+                                                                Edit
+                                                            </button>
 
-                                                        <button
-                                                            type="button"
-                                                            className="edit-range-button"
-                                                            onClick={() =>
-                                                                editAvailability(
-                                                                    date,
-                                                                    index
-                                                                )
-                                                            }
-                                                        >
-                                                            <FiEdit2 />
-                                                            Edit
-                                                        </button>
+                                                            <button
+                                                                type="button"
+                                                                className="delete-range-button"
+                                                                onClick={() =>
+                                                                    deleteAvailability(
+                                                                        date,
+                                                                        index
+                                                                    )
+                                                                }
+                                                            >
+                                                                <FiTrash2 />
+                                                                Delete
+                                                            </button>
 
-                                                        <button
-                                                            type="button"
-                                                            className="delete-range-button"
-                                                            onClick={() =>
-                                                                deleteAvailability(
-                                                                    date,
-                                                                    index
-                                                                )
-                                                            }
-                                                        >
-                                                            <FiTrash2 />
-                                                            Delete
-                                                        </button>
-
+                                                        </div>
                                                     </div>
-
-                                                </div>
-                                            ))}
+                                                )
+                                            )}
 
                                         </div>
                                     </div>
-                                )
-                            )}
+                                ))}
 
                             <div className="availability-actions">
+
+                                {saveError && (
+                                    <p className="form-error save-error">
+                                        {saveError}
+                                    </p>
+                                )}
+
                                 <button
                                     type="submit"
                                     className="primary-button save-availability-button"
@@ -679,15 +921,10 @@ function Availability() {
                                     <FiSave />
                                     Save my availability
                                 </button>
+
                             </div>
 
                         </div>
-                    )}
-
-                    {error && (
-                        <p className="form-error">
-                            {error}
-                        </p>
                     )}
 
                 </form>
