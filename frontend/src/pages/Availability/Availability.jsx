@@ -1,5 +1,10 @@
 import { useState } from 'react'
-import { useLocation } from 'react-router-dom'
+import {
+    Link,
+    useLocation,
+    useParams
+} from 'react-router-dom'
+
 import DatePicker from 'react-datepicker'
 import 'react-datepicker/dist/react-datepicker.css'
 import './Availability.css'
@@ -14,6 +19,8 @@ import {
 
 function Availability() {
     const location = useLocation()
+    const { groupId } = useParams()
+
     const group = location.state?.group
 
     const [participantName, setParticipantName] = useState('')
@@ -33,6 +40,8 @@ function Availability() {
     const [dateError, setDateError] = useState('')
     const [timeError, setTimeError] = useState('')
     const [saveError, setSaveError] = useState('')
+
+    const [saved, setSaved] = useState(false)
 
     function clearErrors() {
         setNameError('')
@@ -233,9 +242,6 @@ function Availability() {
 
         const newRange = createRange()
 
-        /*
-         * Editing an existing availability
-         */
         if (editingRange) {
             const existingRanges =
                 availability[editingRange.date] || []
@@ -267,12 +273,7 @@ function Availability() {
                         updatedRanges,
                 }
             })
-        }
-
-        /*
-         * Adding availability to one or more days
-         */
-        else {
+        } else {
             const conflictingDates =
                 selectedDates.filter((date) => {
                     const dateKey =
@@ -460,7 +461,11 @@ function Availability() {
             availability,
         }
 
+        // Temporary frontend-only save.
+        // Tomorrow this will be replaced by the real backend request.
         console.log(data)
+
+        setSaved(true)
     }
 
     function formatRange(range) {
@@ -518,6 +523,47 @@ function Availability() {
         }
 
         return `${selectedDates.length} days selected`
+    }
+
+    if (saved) {
+        return (
+            <main className="availability-page">
+                <section className="availability-card availability-success">
+
+                    <div className="success-icon">
+                        <FiCheck />
+                    </div>
+
+                    <p className="eyebrow">
+                        All set
+                    </p>
+
+                    <h1>
+                        Availability saved!
+                    </h1>
+
+                    <p className="success-description">
+                        Your availability has been saved successfully.
+                        You can return to the group to see the latest updates.
+                    </p>
+
+                    <Link
+                        to={`/group/${groupId}`}
+                        state={{
+                            group,
+                            availabilitySaved: true,
+                            participantName:
+                                participantName.trim(),
+                            availability,
+                        }}
+                        className="primary-button"
+                    >
+                        Back to group
+                    </Link>
+
+                </section>
+            </main>
+        )
     }
 
     return (

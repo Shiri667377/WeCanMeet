@@ -378,6 +378,46 @@
     font-weight: 600;
 }
 
+
+.availability-success {
+    max-width: 620px;
+    text-align: center;
+}
+
+.success-icon {
+    width: 54px;
+    height: 54px;
+    margin: 0 auto 22px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 50%;
+
+    background: #f5f3ff;
+    color: #6d5dfc;
+
+    font-size: 26px;
+}
+
+.availability-success h1 {
+    margin: 8px 0 14px;
+
+    font-size: 36px;
+    letter-spacing: -1px;
+}
+
+.success-description {
+    max-width: 440px;
+    margin: 0 auto 28px;
+
+    color: #64748b;
+
+    font-size: 16px;
+    line-height: 1.6;
+}
+
 /* Calendar selected days */
 
 .react-datepicker__day.selected-availability-date {
