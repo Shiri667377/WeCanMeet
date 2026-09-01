@@ -2,6 +2,9 @@ import './GroupPage.css'
 import { FiCopy, FiShare2 } from 'react-icons/fi'
 import { FaWhatsapp } from 'react-icons/fa'
 import { useState } from 'react'
+import { useEffect } from 'react'
+import { useLocation } from 'react-router-dom'
+import confetti from 'canvas-confetti'
 
 function GroupPage() {
     const [copied, setCopied] = useState(false)
@@ -28,6 +31,20 @@ function GroupPage() {
             })
         }
     }
+
+    const location = useLocation()
+    const groupCreated = location.state?.groupCreated
+
+    useEffect(() => {
+        if (groupCreated) {
+            confetti({
+                particleCount: 80,
+                spread: 70,
+                origin: { y: 0.6 },
+            })
+        }
+    }, [groupCreated])
+
     return (
         <main className="group-page">
             <section className="group-card">

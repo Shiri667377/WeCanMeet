@@ -64,7 +64,11 @@ function CreateGroup() {
 
     console.log(groupData)
 
-    navigate('/group/1')
+    navigate('/group/1', {
+      state: {
+        groupCreated: true,
+      },
+    })
   }
 
   return (
