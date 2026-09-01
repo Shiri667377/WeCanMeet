@@ -1,9 +1,8 @@
 import { useState } from 'react'
+import { Link, useNavigate } from 'react-router-dom'
 import DatePicker from 'react-datepicker'
 import 'react-datepicker/dist/react-datepicker.css'
 import './CreateGroup.css'
-import { Link } from 'react-router-dom'
-import { useNavigate } from 'react-router-dom'
 
 function CreateGroup() {
   const [groupName, setGroupName] = useState('')
@@ -12,29 +11,59 @@ function CreateGroup() {
   const [customUnit, setCustomUnit] = useState('hours')
   const [startDate, setStartDate] = useState(null)
   const [endDate, setEndDate] = useState(null)
-  const [error, setError] = useState('')
+
+  const [nameError, setNameError] = useState('')
+  const [durationError, setDurationError] = useState('')
+  const [dateError, setDateError] = useState('')
 
   const navigate = useNavigate()
+
+  function clearErrors() {
+    setNameError('')
+    setDurationError('')
+    setDateError('')
+  }
 
   function handleSubmit(event) {
     event.preventDefault()
 
+    clearErrors()
+
+    let hasError = false
+
     if (!groupName.trim()) {
-      setError('Please enter a group name.')
-      return
+      setNameError('Please enter a group name.')
+      hasError = true
+    }
+
+    if (meetingDuration === 'other') {
+      const customValue = Number(customDuration)
+
+      if (
+        !customDuration ||
+        Number.isNaN(customValue) ||
+        customValue <= 0
+      ) {
+        setDurationError(
+          'Please enter a valid meeting duration.'
+        )
+        hasError = true
+      }
     }
 
     if (!startDate || !endDate) {
-      setError('Please select a date range.')
-      return
+      setDateError('Please select a date range.')
+      hasError = true
+    } else if (endDate < startDate) {
+      setDateError(
+        'End date cannot be before start date.'
+      )
+      hasError = true
     }
 
-    if (endDate < startDate) {
-      setError('End date cannot be before start date.')
+    if (hasError) {
       return
     }
-
-    setError('')
 
     let durationInMinutes
 
@@ -47,14 +76,6 @@ function CreateGroup() {
       durationInMinutes = Number(meetingDuration)
     }
 
-    if (
-      meetingDuration === 'other' &&
-      (!customDuration || Number(customDuration) <= 0)
-    ) {
-      setError('Please enter a valid meeting duration.')
-      return
-    }
-
     const groupData = {
       name: groupName.trim(),
       meetingDuration: durationInMinutes,
@@ -64,15 +85,12 @@ function CreateGroup() {
 
     console.log(groupData)
 
+    // Temporary mock route.
+    // The real group ID will come from the backend later.
     navigate('/group/1', {
       state: {
         groupCreated: true,
-        group: {
-          name: groupName.trim(),
-          meetingDuration: durationInMinutes,
-          startDate,
-          endDate,
-        },
+        group: groupData,
       },
     })
   }
@@ -80,28 +98,56 @@ function CreateGroup() {
   return (
     <main className="create-group-page">
       <section className="create-group-card">
+
         <div className="create-group-header">
-          <p className="eyebrow">Create your group</p>
+          <p className="eyebrow">
+            Create your group
+          </p>
+
           <h1>Set up your meeting</h1>
+
           <p className="create-group-description">
             Set the basic details for your meeting.
           </p>
         </div>
 
-        <form className="create-group-form" onSubmit={handleSubmit}>
+        <form
+          className="create-group-form"
+          onSubmit={handleSubmit}
+        >
+
+          {/* Group name */}
+
           <div className="form-field">
-            <label htmlFor="groupName">Group name</label>
+            <label htmlFor="groupName">
+              Group name
+            </label>
+
             <input
               id="groupName"
               type="text"
               placeholder="e.g. Study group"
               value={groupName}
-              onChange={(event) => setGroupName(event.target.value)}
+              onChange={(event) => {
+                setGroupName(event.target.value)
+                setNameError('')
+              }}
             />
+
+            {nameError && (
+              <p className="form-error">
+                {nameError}
+              </p>
+            )}
           </div>
 
+          {/* Meeting duration */}
+
           <div className="form-field">
-            <label htmlFor="meetingDuration">Minimum Meeting duration</label>
+            <label htmlFor="meetingDuration">
+              Minimum meeting duration
+            </label>
+
             <p className="field-help">
               We'll look for time slots that are at least this long.
             </p>
@@ -109,43 +155,105 @@ function CreateGroup() {
             <select
               id="meetingDuration"
               value={meetingDuration}
-              onChange={(event) => setMeetingDuration(event.target.value)}
+              onChange={(event) => {
+                setMeetingDuration(
+                  event.target.value
+                )
+
+                setDurationError('')
+
+                if (
+                  event.target.value !== 'other'
+                ) {
+                  setCustomDuration('')
+                }
+              }}
             >
-              <option value="30">30 minutes</option>
-              <option value="45">45 minutes</option>
-              <option value="60">1 hour</option>
-              <option value="90">1.5 hours</option>
-              <option value="120">2 hours</option>
-              <option value="180">3 hours</option>
-              <option value="other">Other...</option>
+              <option value="30">
+                30 minutes
+              </option>
+
+              <option value="45">
+                45 minutes
+              </option>
+
+              <option value="60">
+                1 hour
+              </option>
+
+              <option value="90">
+                1.5 hours
+              </option>
+
+              <option value="120">
+                2 hours
+              </option>
+
+              <option value="180">
+                3 hours
+              </option>
+
+              <option value="other">
+                Other...
+              </option>
             </select>
 
             {meetingDuration === 'other' && (
               <div className="custom-duration">
+
                 <input
                   type="number"
                   min="0.5"
-                  step="0.5"
+                  step={
+                    customUnit === 'hours'
+                      ? '0.5'
+                      : '1'
+                  }
                   placeholder="Duration"
                   value={customDuration}
-                  onChange={(event) => setCustomDuration(event.target.value)}
+                  onChange={(event) => {
+                    setCustomDuration(
+                      event.target.value
+                    )
+                    setDurationError('')
+                  }}
                 />
 
                 <select
                   value={customUnit}
-                  onChange={(event) => setCustomUnit(event.target.value)}
+                  onChange={(event) => {
+                    setCustomUnit(
+                      event.target.value
+                    )
+                    setDurationError('')
+                  }}
                 >
-                  <option value="hours">Hours</option>
-                  <option value="minutes">Minutes</option>
+                  <option value="hours">
+                    Hours
+                  </option>
+
+                  <option value="minutes">
+                    Minutes
+                  </option>
                 </select>
+
               </div>
             )}
+
+            {durationError && (
+              <p className="form-error">
+                {durationError}
+              </p>
+            )}
           </div>
+
+          {/* Date range */}
 
           <div className="form-field">
             <label>Date range</label>
 
             <div className="date-range">
+
               <div className="date-input">
                 <label>From</label>
 
@@ -153,8 +261,12 @@ function CreateGroup() {
                   selected={startDate}
                   onChange={(date) => {
                     setStartDate(date)
+                    setDateError('')
 
-                    if (endDate && date > endDate) {
+                    if (
+                      endDate &&
+                      date > endDate
+                    ) {
                       setEndDate(null)
                     }
                   }}
@@ -172,31 +284,51 @@ function CreateGroup() {
 
                 <DatePicker
                   selected={endDate}
-                  onChange={(date) => setEndDate(date)}
+                  onChange={(date) => {
+                    setEndDate(date)
+                    setDateError('')
+                  }}
                   selectsEnd
                   startDate={startDate}
                   endDate={endDate}
-                  minDate={startDate || new Date()}
+                  minDate={
+                    startDate || new Date()
+                  }
                   placeholderText="Select end date"
                   dateFormat="dd/MM/yyyy"
                   disabled={!startDate}
                 />
               </div>
+
             </div>
+
+            {dateError && (
+              <p className="form-error">
+                {dateError}
+              </p>
+            )}
           </div>
 
-          {error && <p className="form-error">{error}</p>}
+          {/* Actions */}
 
           <div className="form-actions">
-            <Link to="/" className="secondary-button cancel-link">
+            <Link
+              to="/"
+              className="secondary-button cancel-link"
+            >
               Cancel
             </Link>
 
-            <button type="submit" className="primary-button">
+            <button
+              type="submit"
+              className="primary-button"
+            >
               Create group
             </button>
           </div>
+
         </form>
+
       </section>
     </main>
   )
