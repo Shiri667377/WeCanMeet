@@ -1,8 +1,23 @@
 import './Home.css'
 import { Link } from 'react-router-dom'
 import { FiPlusCircle, FiShare2, FiUsers } from 'react-icons/fi'
+import { useEffect } from 'react'
+import { useLocation } from 'react-router-dom'
 
 function Home() {
+  const location = useLocation()
+
+  useEffect(() => {
+    if (location.hash === '#how-it-works') {
+      const section = document.getElementById('how-it-works')
+
+      if (section) {
+        section.scrollIntoView({
+          behavior: 'smooth'
+        })
+      }
+    }
+  }, [location])
   return (
     <main className="home">
       <section className="hero">
