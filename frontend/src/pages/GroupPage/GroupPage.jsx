@@ -1,48 +1,138 @@
 import './GroupPage.css'
-import { FiCopy, FiShare2 } from 'react-icons/fi'
+
+import { useEffect, useState } from 'react'
+import {
+    Link,
+    useLocation,
+    useParams
+} from 'react-router-dom'
+
+import {
+    FiCalendar,
+    FiClock,
+    FiCopy,
+    FiShare2,
+    FiUsers,
+    FiCheckCircle
+} from 'react-icons/fi'
+
 import { FaWhatsapp } from 'react-icons/fa'
-import { useState } from 'react'
-import { useEffect } from 'react'
-import { useLocation } from 'react-router-dom'
 import confetti from 'canvas-confetti'
-import { Link } from 'react-router-dom'
 
 function GroupPage() {
+    const location = useLocation()
+    const { groupId } = useParams()
+
+    const groupCreated = location.state?.groupCreated
+    const availabilitySaved =
+        location.state?.availabilitySaved
+
+    const participantName =
+        location.state?.participantName
+
+    const participantAvailability =
+        location.state?.availability
+
+    const group = location.state?.group
+
     const [copied, setCopied] = useState(false)
-    const shareLink = 'https://wecanmeet.com/group/ABC123'
+
+    /*
+     * Temporary frontend mock.
+     *
+     * Later the real share link will come from
+     * the backend using the group's join code.
+     */
+    const shareLink =
+        `https://wecanmeet.com/group/${groupId}`
+
+    /*
+     * Temporary participant count.
+     *
+     * For now, after saving availability,
+     * we treat the current participant as one
+     * submitted participant.
+     *
+     * Later this will come from the backend.
+     */
+    const participantCount =
+        availabilitySaved ? 1 : 0
 
     async function copyLink() {
-        await navigator.clipboard.writeText(shareLink)
-        setCopied(true)
+        try {
+            await navigator.clipboard.writeText(
+                shareLink
+            )
+
+            setCopied(true)
+        } catch {
+            setCopied(false)
+        }
     }
 
     function shareToWhatsApp() {
-        const message = `Join my WeCanMeet group: ${shareLink}`
-        const url = `https://wa.me/?text=${encodeURIComponent(message)}`
+        const message =
+            `Join my WeCanMeet group: ${shareLink}`
 
-        window.open(url, '_blank')
+        const url =
+            `https://wa.me/?text=${encodeURIComponent(message)}`
+
+        window.open(
+            url,
+            '_blank',
+            'noopener,noreferrer'
+        )
     }
 
     async function shareGroup() {
-        if (navigator.share) {
+        if (!navigator.share) {
+            return
+        }
+
+        try {
             await navigator.share({
                 title: 'WeCanMeet',
                 text: 'Join my group and add your availability!',
                 url: shareLink,
             })
+        } catch {
+            /*
+             * The user may simply close the native
+             * share dialog, so no error UI is needed.
+             */
         }
     }
 
-    const location = useLocation()
-    const groupCreated = location.state?.groupCreated
-    const group = location.state?.group
+    function formatDuration(minutes) {
+        if (!minutes) {
+            return ''
+        }
+
+        if (minutes < 60) {
+            return `${minutes} minutes`
+        }
+
+        if (minutes % 60 === 0) {
+            const hours = minutes / 60
+
+            return hours === 1
+                ? '1 hour'
+                : `${hours} hours`
+        }
+
+        const hours = minutes / 60
+
+        return `${hours} hours`
+    }
 
     useEffect(() => {
         if (groupCreated) {
             confetti({
                 particleCount: 80,
                 spread: 70,
-                origin: { y: 0.6 },
+                origin: {
+                    y: 0.6,
+                },
             })
         }
     }, [groupCreated])
@@ -50,31 +140,139 @@ function GroupPage() {
     return (
         <main className="group-page">
             <section className="group-card">
+
+                {/* Header */}
+
                 <div className="group-header">
-                    <p className="eyebrow">Your group is ready!</p>
-                    <h1>{group?.name}</h1>
-                    <p className="group-description">
-                        Share the link with everyone, then add your own availability.
+
+                    <p className="eyebrow">
+                        {groupCreated
+                            ? 'Your group is ready!'
+                            : 'Group schedule'}
                     </p>
+
+                    <h1>
+                        {group?.name || 'Your group'}
+                    </h1>
+
+                    <p className="group-description">
+                        Share the group with everyone and
+                        find the best time to meet.
+                    </p>
+
                 </div>
 
+                {/* Group information */}
+
                 <div className="group-details">
+
                     <div className="detail-item">
-                        <span>Date range</span>
+                        <span>
+                            <FiCalendar />
+                            Date range
+                        </span>
+
                         <strong>
-                            {group?.startDate?.toLocaleDateString()} – {group?.endDate?.toLocaleDateString()}
+                            {group?.startDate &&
+                            group?.endDate
+                                ? `${group.startDate.toLocaleDateString()} – ${group.endDate.toLocaleDateString()}`
+                                : 'Not available'}
                         </strong>
                     </div>
 
                     <div className="detail-item">
-                        <span>Meeting duration</span>
-                        <strong>{group?.meetingDuration} minutes</strong>                    </div>
+                        <span>
+                            <FiClock />
+                            Minimum duration
+                        </span>
+
+                        <strong>
+                            {group?.meetingDuration
+                                ? formatDuration(
+                                    group.meetingDuration
+                                )
+                                : 'Not available'}
+                        </strong>
+                    </div>
+
+                    <div className="detail-item participant-detail">
+                        <span>
+                            <FiUsers />
+                            Participants
+                        </span>
+
+                        <strong>
+                            {participantCount}
+                        </strong>
+                    </div>
+
                 </div>
 
+                {/* Results */}
+
+                <div className="group-results">
+
+                    <div className="section-heading">
+                        <div>
+                            <h2>
+                                Best times
+                            </h2>
+
+                            <p>
+                                Recommended meeting times will
+                                appear here as participants add
+                                their availability.
+                            </p>
+                        </div>
+                    </div>
+
+                    <div className="results-empty">
+                        <FiCalendar />
+
+                        <strong>
+                            No results yet
+                        </strong>
+
+                        <p>
+                            Once more participants add their
+                            availability, the best matching
+                            times will appear here.
+                        </p>
+                    </div>
+
+                </div>
+
+                {/* Availability action */}
+
+                <div className="group-actions">
+
+                    <Link
+                        to={`/group/${groupId}/availability`}
+                        state={{
+                            group,
+                            participantName,
+                            availability:
+                                participantAvailability,
+                        }}
+                        className="primary-button"
+                    >
+                        {availabilitySaved
+                            ? 'Edit my availability'
+                            : 'Add my availability'}
+                    </Link>
+
+                </div>
+
+                {/* Share section */}
+
                 <div className="share-section">
-                    <label htmlFor="shareLink">Share this group</label>
+
+                    <label htmlFor="shareLink">
+                        Share this group
+                    </label>
 
                     <div className="share-link-row">
+
                         <input
                             id="shareLink"
                             type="text"
@@ -88,15 +286,22 @@ function GroupPage() {
                             onClick={copyLink}
                         >
                             <FiCopy />
-                            {copied ? 'Copied!' : 'Copy'}
+
+                            {copied
+                                ? 'Copied!'
+                                : 'Copy'}
                         </button>
+
                     </div>
 
                     <div className="share-options">
+
                         <button
                             type="button"
                             className="share-option"
-                            onClick={shareToWhatsApp}
+                            onClick={
+                                shareToWhatsApp
+                            }
                         >
                             <FaWhatsapp />
                             WhatsApp
@@ -110,18 +315,11 @@ function GroupPage() {
                             <FiShare2 />
                             Share
                         </button>
+
                     </div>
+
                 </div>
 
-                <div className="group-actions">
-                    <Link
-                        to="/group/1/availability"
-                        state={{ group }}
-                        className="primary-button"
-                    >
-                        Add my availability
-                    </Link>
-                </div>
             </section>
         </main>
     )
