@@ -1,0 +1,176 @@
+.group-page {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 70px 32px;
+}
+
+.group-card {
+    max-width: 720px;
+    margin: 0 auto;
+    padding: 48px;
+
+    background: white;
+    border: 1px solid #e8edf3;
+    border-radius: 20px;
+}
+
+.group-header {
+    margin-bottom: 36px;
+}
+
+.group-header h1 {
+    margin: 8px 0 0;
+    font-size: 36px;
+    letter-spacing: -1px;
+}
+
+.group-description {
+    margin-top: 14px;
+    color: #64748b;
+    font-size: 16px;
+    line-height: 1.6;
+}
+
+.group-details {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    margin-bottom: 32px;
+}
+
+.detail-item {
+    padding: 18px;
+    border: 1px solid #e8edf3;
+    border-radius: 12px;
+    background: #f8fafc;
+
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.detail-item span {
+    color: #64748b;
+    font-size: 13px;
+}
+
+.detail-item strong {
+    color: #1f2937;
+    font-size: 16px;
+}
+
+.share-section {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.share-section label {
+    font-size: 14px;
+    font-weight: 600;
+    color: #334155;
+}
+
+.share-link-row {
+    display: flex;
+    gap: 10px;
+}
+
+.share-link-row input {
+    flex: 1;
+    min-width: 0;
+
+    padding: 13px 14px;
+    border: 1px solid #dbe2ea;
+    border-radius: 10px;
+
+    background: #f8fafc;
+    color: #64748b;
+    font-size: 14px;
+}
+
+.group-actions {
+    margin-top: 32px;
+    display: flex;
+    justify-content: flex-end;
+}
+
+.copy-button {
+    border: 1px solid #d8d4ff;
+    background: #f5f3ff;
+    color: #6d5dfc;
+
+    padding: 0 16px;
+    border-radius: 10px;
+
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 7px;
+
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.copy-button:hover {
+    background: #ede9fe;
+}
+
+.share-options {
+    margin-top: 8px;
+    display: flex;
+    gap: 10px;
+    justify-content: flex-end;
+}
+
+.share-option {
+    padding: 10px 14px;
+
+    border: 1px solid #e2e8f0;
+    border-radius: 10px;
+
+    background: white;
+    color: #475569;
+
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+
+    font-size: 14px;
+    font-weight: 600;
+
+    cursor: pointer;
+}
+
+.share-option:hover {
+    background: #f8fafc;
+    border-color: #d8d4ff;
+    color: #6d5dfc;
+}
+
+.share-option svg {
+    width: 18px;
+    height: 18px;
+}
+
+@media (max-width: 700px) {
+    .group-page {
+        padding: 40px 20px;
+    }
+
+    .group-card {
+        padding: 28px 22px;
+    }
+
+    .group-details {
+        grid-template-columns: 1fr;
+    }
+
+    .share-link-row {
+        flex-direction: column;
+    }
+
+    .group-actions {
+        flex-direction: column;
+    }
+}

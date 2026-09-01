@@ -28,6 +28,11 @@
     color: #64748b;
     text-decoration: none;
     padding-bottom: 6px;
+    transition: color 0.2s ease;
+}
+
+.nav-link:hover {
+    color: #6d5dfc;
 }
 
 .nav-link.active {
