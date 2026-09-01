@@ -67,6 +67,12 @@ function CreateGroup() {
     navigate('/group/1', {
       state: {
         groupCreated: true,
+        group: {
+          name: groupName.trim(),
+          meetingDuration: durationInMinutes,
+          startDate,
+          endDate,
+        },
       },
     })
   }

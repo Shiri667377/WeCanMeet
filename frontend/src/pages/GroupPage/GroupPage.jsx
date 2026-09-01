@@ -34,6 +34,7 @@ function GroupPage() {
 
     const location = useLocation()
     const groupCreated = location.state?.groupCreated
+    const group = location.state?.group
 
     useEffect(() => {
         if (groupCreated) {
@@ -50,8 +51,7 @@ function GroupPage() {
             <section className="group-card">
                 <div className="group-header">
                     <p className="eyebrow">Your group is ready!</p>
-                    <h1>Study Group</h1>
-
+                    <h1>{group?.name}</h1>
                     <p className="group-description">
                         Share the link with everyone, then add your own availability.
                     </p>
@@ -60,13 +60,14 @@ function GroupPage() {
                 <div className="group-details">
                     <div className="detail-item">
                         <span>Date range</span>
-                        <strong>10 Sep – 18 Sep</strong>
+                        <strong>
+                            {group?.startDate?.toLocaleDateString()} – {group?.endDate?.toLocaleDateString()}
+                        </strong>
                     </div>
 
                     <div className="detail-item">
                         <span>Meeting duration</span>
-                        <strong>1 hour</strong>
-                    </div>
+                        <strong>{group?.meetingDuration} minutes</strong>                    </div>
                 </div>
 
                 <div className="share-section">
