@@ -12,8 +12,7 @@ import {
     FiClock,
     FiCopy,
     FiShare2,
-    FiUsers,
-    FiCheckCircle
+    FiUsers
 } from 'react-icons/fi'
 
 import { FaWhatsapp } from 'react-icons/fa'
@@ -154,6 +153,12 @@ function GroupPage() {
                     <h1>
                         {group?.name || 'Your group'}
                     </h1>
+
+                    {group?.creatorName && (
+                        <p className="group-creator">
+                            Created by {group.creatorName}
+                        </p>
+                    )}
 
                     <p className="group-description">
                         Share the group with everyone and

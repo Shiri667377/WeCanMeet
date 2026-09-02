@@ -6,20 +6,19 @@ import './CreateGroup.css'
 
 function CreateGroup() {
   const [groupName, setGroupName] = useState('')
+  const [creatorName, setCreatorName] = useState('')
   const [meetingDuration, setMeetingDuration] = useState('60')
   const [customDuration, setCustomDuration] = useState('')
   const [customUnit, setCustomUnit] = useState('hours')
   const [startDate, setStartDate] = useState(null)
   const [endDate, setEndDate] = useState(null)
 
-  const [nameError, setNameError] = useState('')
   const [durationError, setDurationError] = useState('')
   const [dateError, setDateError] = useState('')
 
   const navigate = useNavigate()
 
   function clearErrors() {
-    setNameError('')
     setDurationError('')
     setDateError('')
   }
@@ -30,11 +29,6 @@ function CreateGroup() {
     clearErrors()
 
     let hasError = false
-
-    if (!groupName.trim()) {
-      setNameError('Please enter a group name.')
-      hasError = true
-    }
 
     if (meetingDuration === 'other') {
       const customValue = Number(customDuration)
@@ -78,6 +72,7 @@ function CreateGroup() {
 
     const groupData = {
       name: groupName.trim(),
+      creatorName: creatorName.trim(),
       meetingDuration: durationInMinutes,
       startDate,
       endDate,
@@ -121,6 +116,9 @@ function CreateGroup() {
           <div className="form-field">
             <label htmlFor="groupName">
               Group name
+              <span className="optional-label">
+                {' '}(optional)
+              </span>
             </label>
 
             <input
@@ -130,15 +128,33 @@ function CreateGroup() {
               value={groupName}
               onChange={(event) => {
                 setGroupName(event.target.value)
-                setNameError('')
               }}
             />
+          </div>
 
-            {nameError && (
-              <p className="form-error">
-                {nameError}
-              </p>
-            )}
+          {/* Creator name */}
+
+          <div className="form-field">
+            <label htmlFor="creatorName">
+              Your name
+              <span className="optional-label">
+                {' '}(optional)
+              </span>
+            </label>
+
+            <p className="field-help">
+              This lets participants know who created the group.
+            </p>
+
+            <input
+              id="creatorName"
+              type="text"
+              placeholder="Enter your name"
+              value={creatorName}
+              onChange={(event) => {
+                setCreatorName(event.target.value)
+              }}
+            />
           </div>
 
           {/* Meeting duration */}

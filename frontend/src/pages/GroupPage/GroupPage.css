@@ -143,7 +143,7 @@
     background: #f8fafc;
 }
 
-.results-empty > svg {
+.results-empty>svg {
     width: 26px;
     height: 26px;
 
@@ -277,6 +277,13 @@
 .share-option svg {
     width: 18px;
     height: 18px;
+}
+
+.group-creator {
+    margin: 8px 0 0;
+    color: #64748b;
+    font-size: 14px;
+    font-weight: 500;
 }
 
 /* Mobile */
