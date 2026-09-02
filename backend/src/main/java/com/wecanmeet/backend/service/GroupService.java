@@ -4,6 +4,7 @@ import com.wecanmeet.backend.dto.group.CreateGroupRequest;
 import com.wecanmeet.backend.model.Group;
 import com.wecanmeet.backend.repository.GroupRepository;
 import com.wecanmeet.backend.dto.group.CreateGroupResponse;
+import com.wecanmeet.backend.security.TokenUtils;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
@@ -27,6 +28,11 @@ public class GroupService {
         group.setStartDate(request.getStartDate());
         group.setEndDate(request.getEndDate());
 
+        String adminToken = TokenUtils.generateToken();
+        String adminTokenHash = TokenUtils.hashToken(adminToken);
+
+        group.setAdminTokenHash(adminTokenHash);
+
         Group savedGroup = groupRepository.save(group);
 
         return new CreateGroupResponse(
@@ -38,7 +44,7 @@ public class GroupService {
                 savedGroup.getEndDate(),
                 savedGroup.isActive(),
                 savedGroup.getCreatedAt(),
-                null);
+                adminToken);
     }
 
     public Optional<Group> getGroupById(Long id) {
