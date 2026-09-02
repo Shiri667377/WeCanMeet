@@ -2,6 +2,8 @@ package com.wecanmeet.backend.controller;
 
 import com.wecanmeet.backend.service.GroupService;
 
+import com.wecanmeet.backend.dto.group.CreateGroupResponse;
+
 import org.springframework.web.bind.annotation.RestController;
 
 import com.wecanmeet.backend.dto.group.CreateGroupRequest;
@@ -25,7 +27,7 @@ public class GroupController {
     }
 
     @PostMapping("/groups")
-    public Group createGroup(@RequestBody CreateGroupRequest request) {
+    public CreateGroupResponse createGroup(@RequestBody CreateGroupRequest request) {
         return groupService.createGroup(request);
     }
 
