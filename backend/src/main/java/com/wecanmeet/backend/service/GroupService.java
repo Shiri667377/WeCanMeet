@@ -1,6 +1,6 @@
 package com.wecanmeet.backend.service;
 
-import com.wecanmeet.backend.dto.CreateGroupRequest;
+import com.wecanmeet.backend.dto.group.CreateGroupRequest;
 import com.wecanmeet.backend.model.Group;
 import com.wecanmeet.backend.repository.GroupRepository;
 

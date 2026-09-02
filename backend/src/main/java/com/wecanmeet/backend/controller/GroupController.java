@@ -1,10 +1,10 @@
 package com.wecanmeet.backend.controller;
 
 import com.wecanmeet.backend.service.GroupService;
-import com.wecanmeet.backend.dto.CreateGroupRequest;
 
 import org.springframework.web.bind.annotation.RestController;
 
+import com.wecanmeet.backend.dto.group.CreateGroupRequest;
 import com.wecanmeet.backend.model.Group;
 
 import org.springframework.web.bind.annotation.GetMapping;

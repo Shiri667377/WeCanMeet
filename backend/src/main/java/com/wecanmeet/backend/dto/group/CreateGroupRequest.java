@@ -1,4 +1,4 @@
-package com.wecanmeet.backend.dto;
+package com.wecanmeet.backend.dto.group;
 
 import java.time.LocalDate;
 
