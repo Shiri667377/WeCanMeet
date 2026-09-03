@@ -36,18 +36,8 @@ public class GroupService {
 
         Group savedGroup = groupRepository.save(group);
 
-        CreateGroupResponse response = new CreateGroupResponse(
-                savedGroup.getId(),
-                savedGroup.getName(),
-                savedGroup.getCreatorName(),
-                savedGroup.getMinimumMeetingDuration(),
-                savedGroup.getStartDate(),
-                savedGroup.getEndDate(),
-                savedGroup.isActive(),
-                savedGroup.getCreatedAt());
-
         return new CreatedGroupResult(
-                response,
+                savedGroup.getId(),
                 adminToken);
     }
 

@@ -40,7 +40,7 @@ public class GroupController {
         CreatedGroupResult result = groupService.createGroup(request);
 
         ResponseCookie adminCookie = ResponseCookie.from(
-                "wecanmeet_admin_" + result.response().getId(),
+                "wecanmeet_admin_" + result.groupId(),
                 result.adminToken())
                 .httpOnly(true)
                 .secure(false)
@@ -48,12 +48,15 @@ public class GroupController {
                 .path("/")
                 .build();
 
+        CreateGroupResponse response = new CreateGroupResponse(
+                result.groupId());
+
         return ResponseEntity
-                .ok()
+                .status(201)
                 .header(
                         HttpHeaders.SET_COOKIE,
                         adminCookie.toString())
-                .body(result.response());
+                .body(response);
     }
 
     @GetMapping("/groups/{id}")

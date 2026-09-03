@@ -1,9 +1,7 @@
 package com.wecanmeet.backend.service.result;
 
-import com.wecanmeet.backend.dto.group.CreateGroupResponse;
-
 public record CreatedGroupResult(
-        CreateGroupResponse response,
+        Long groupId,
         String adminToken
 ) {
 }
