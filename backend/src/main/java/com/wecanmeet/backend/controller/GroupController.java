@@ -22,6 +22,10 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseCookie;
 
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletRequest;
+import org.springframework.web.bind.annotation.PatchMapping;
+
 @RestController
 public class GroupController {
     private final GroupService groupService;
@@ -36,7 +40,7 @@ public class GroupController {
         CreatedGroupResult result = groupService.createGroup(request);
 
         ResponseCookie adminCookie = ResponseCookie.from(
-                "wecanmeet_admin",
+                "wecanmeet_admin_" + result.response().getId(),
                 result.adminToken())
                 .httpOnly(true)
                 .secure(false)
@@ -61,5 +65,38 @@ public class GroupController {
         }
 
         return ResponseEntity.notFound().build();
+    }
+
+    @PatchMapping("/groups/{id}/close")
+    public ResponseEntity<Void> closeGroup(
+            @PathVariable Long id,
+            HttpServletRequest request) {
+        Cookie[] cookies = request.getCookies();
+
+        if (cookies == null) {
+            return ResponseEntity.status(403).build();
+        }
+
+        String cookieName = "wecanmeet_admin_" + id;
+        String adminToken = null;
+
+        for (Cookie cookie : cookies) {
+            if (cookieName.equals(cookie.getName())) {
+                adminToken = cookie.getValue();
+                break;
+            }
+        }
+
+        if (adminToken == null) {
+            return ResponseEntity.status(403).build();
+        }
+
+        boolean closed = groupService.closeGroup(id, adminToken);
+
+        if (!closed) {
+            return ResponseEntity.notFound().build();
+        }
+
+        return ResponseEntity.noContent().build();
     }
 }

@@ -54,4 +54,27 @@ public class GroupService {
     public Optional<Group> getGroupById(Long id) {
         return groupRepository.findById(id);
     }
+
+    public boolean closeGroup(Long id, String adminToken) {
+        Optional<Group> optionalGroup = groupRepository.findById(id);
+
+        if (optionalGroup.isEmpty()) {
+            return false;
+        }
+
+        Group group = optionalGroup.get();
+
+        String tokenHash = TokenUtils.hashToken(adminToken);
+
+        if (!tokenHash.equals(group.getAdminTokenHash())) {
+            throw new SecurityException(
+                    "Invalid admin token");
+        }
+
+        group.setActive(false);
+
+        groupRepository.save(group);
+
+        return true;
+    }
 }
