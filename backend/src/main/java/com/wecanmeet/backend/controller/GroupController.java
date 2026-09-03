@@ -4,10 +4,11 @@ import com.wecanmeet.backend.service.GroupService;
 
 import com.wecanmeet.backend.dto.group.CreateGroupResponse;
 
+import com.wecanmeet.backend.dto.group.GroupResponse;
+
 import org.springframework.web.bind.annotation.RestController;
 
 import com.wecanmeet.backend.dto.group.CreateGroupRequest;
-import com.wecanmeet.backend.model.Group;
 import com.wecanmeet.backend.service.result.CreatedGroupResult;
 
 import org.springframework.web.bind.annotation.GetMapping;
@@ -60,8 +61,9 @@ public class GroupController {
     }
 
     @GetMapping("/groups/{id}")
-    public ResponseEntity<Group> getGroupById(@PathVariable Long id) {
-        Optional<Group> group = groupService.getGroupById(id);
+    public ResponseEntity<GroupResponse> getGroupById(
+            @PathVariable Long id) {
+        Optional<GroupResponse> group = groupService.getGroupResponseById(id);
 
         if (group.isPresent()) {
             return ResponseEntity.ok(group.get());
