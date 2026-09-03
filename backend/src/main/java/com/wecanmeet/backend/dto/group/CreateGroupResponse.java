@@ -14,7 +14,6 @@ public class CreateGroupResponse {
     private boolean active;
     private LocalDateTime createdAt;
 
-    private String adminToken;
 
     public CreateGroupResponse(
             Long id,
@@ -24,8 +23,7 @@ public class CreateGroupResponse {
             LocalDate startDate,
             LocalDate endDate,
             boolean active,
-            LocalDateTime createdAt,
-            String adminToken
+            LocalDateTime createdAt
     ) {
         this.id = id;
         this.name = name;
@@ -35,7 +33,6 @@ public class CreateGroupResponse {
         this.endDate = endDate;
         this.active = active;
         this.createdAt = createdAt;
-        this.adminToken = adminToken;
     }
 
     public Long getId() {
@@ -70,7 +67,4 @@ public class CreateGroupResponse {
         return createdAt;
     }
 
-    public String getAdminToken() {
-        return adminToken;
-    }
 }

@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.wecanmeet.backend.dto.group.CreateGroupRequest;
 import com.wecanmeet.backend.model.Group;
+import com.wecanmeet.backend.service.result.CreatedGroupResult;
 
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -18,6 +19,9 @@ import java.util.Optional;
 
 import org.springframework.http.ResponseEntity;
 
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.ResponseCookie;
+
 @RestController
 public class GroupController {
     private final GroupService groupService;
@@ -27,8 +31,25 @@ public class GroupController {
     }
 
     @PostMapping("/groups")
-    public CreateGroupResponse createGroup(@RequestBody CreateGroupRequest request) {
-        return groupService.createGroup(request);
+    public ResponseEntity<CreateGroupResponse> createGroup(
+            @RequestBody CreateGroupRequest request) {
+        CreatedGroupResult result = groupService.createGroup(request);
+
+        ResponseCookie adminCookie = ResponseCookie.from(
+                "wecanmeet_admin",
+                result.adminToken())
+                .httpOnly(true)
+                .secure(false)
+                .sameSite("Lax")
+                .path("/")
+                .build();
+
+        return ResponseEntity
+                .ok()
+                .header(
+                        HttpHeaders.SET_COOKIE,
+                        adminCookie.toString())
+                .body(result.response());
     }
 
     @GetMapping("/groups/{id}")

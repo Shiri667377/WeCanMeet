@@ -5,6 +5,7 @@ import com.wecanmeet.backend.model.Group;
 import com.wecanmeet.backend.repository.GroupRepository;
 import com.wecanmeet.backend.dto.group.CreateGroupResponse;
 import com.wecanmeet.backend.security.TokenUtils;
+import com.wecanmeet.backend.service.result.CreatedGroupResult;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
@@ -18,7 +19,7 @@ public class GroupService {
         this.groupRepository = groupRepository;
     }
 
-    public CreateGroupResponse createGroup(CreateGroupRequest request) {
+    public CreatedGroupResult createGroup(CreateGroupRequest request) {
         Group group = new Group();
 
         group.setName(request.getName());
@@ -35,7 +36,7 @@ public class GroupService {
 
         Group savedGroup = groupRepository.save(group);
 
-        return new CreateGroupResponse(
+        CreateGroupResponse response = new CreateGroupResponse(
                 savedGroup.getId(),
                 savedGroup.getName(),
                 savedGroup.getCreatorName(),
@@ -43,7 +44,10 @@ public class GroupService {
                 savedGroup.getStartDate(),
                 savedGroup.getEndDate(),
                 savedGroup.isActive(),
-                savedGroup.getCreatedAt(),
+                savedGroup.getCreatedAt());
+
+        return new CreatedGroupResult(
+                response,
                 adminToken);
     }
 
