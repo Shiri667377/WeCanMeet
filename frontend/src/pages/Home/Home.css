@@ -59,9 +59,14 @@
     gap: 8px;
 }
 
-.button-icon {
-    width: 18px;
-    height: 18px;
+.home-create-button {
+    padding: 18px 30px;
+    font-size: 18px;
+}
+
+.home-create-button .button-icon {
+    width: 21px;
+    height: 21px;
 }
 
 .primary-button:hover {

@@ -34,8 +34,7 @@ function Home() {
         </p>
 
         <div className="hero-actions">
-          <Link to="/create-group" className="primary-button">
-            <FiPlusCircle className="button-icon" />
+          <Link to="/create-group" className="primary-button home-create-button">            <FiPlusCircle className="button-icon" />
             Create a group
           </Link>
         </div>
