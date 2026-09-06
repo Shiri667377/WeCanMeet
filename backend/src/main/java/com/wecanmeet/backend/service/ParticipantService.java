@@ -1,6 +1,7 @@
 package com.wecanmeet.backend.service;
 
 import com.wecanmeet.backend.dto.participant.CreateParticipantRequest;
+import com.wecanmeet.backend.dto.participant.ParticipantResponse;
 import com.wecanmeet.backend.model.Group;
 import com.wecanmeet.backend.model.Participant;
 import com.wecanmeet.backend.repository.GroupRepository;
@@ -8,7 +9,6 @@ import com.wecanmeet.backend.repository.ParticipantRepository;
 import com.wecanmeet.backend.service.result.CreatedParticipantResult;
 import com.wecanmeet.backend.security.TokenUtils;
 import org.springframework.stereotype.Service;
-
 
 @Service
 public class ParticipantService {
@@ -20,16 +20,14 @@ public class ParticipantService {
 
     public ParticipantService(
             ParticipantRepository participantRepository,
-            GroupRepository groupRepository
-    ) {
+            GroupRepository groupRepository) {
         this.participantRepository = participantRepository;
         this.groupRepository = groupRepository;
     }
 
     public CreatedParticipantResult createParticipant(
             Long groupId,
-            CreateParticipantRequest request
-    ) {
+            CreateParticipantRequest request) {
         Group group = groupRepository
                 .findById(groupId)
                 .orElseThrow();
@@ -38,13 +36,11 @@ public class ParticipantService {
             throw new IllegalStateException("Group is closed");
         }
 
-        long participantCount =
-                participantRepository.countByGroupId(groupId);
+        long participantCount = participantRepository.countByGroupId(groupId);
 
         if (participantCount >= MAX_PARTICIPANTS) {
             throw new IllegalStateException(
-                    "Maximum number of participants reached"
-            );
+                    "Maximum number of participants reached");
         }
 
         Participant participant = new Participant();
@@ -52,22 +48,34 @@ public class ParticipantService {
         participant.setName(request.name());
         participant.setGroup(group);
 
-        String participantToken =
-                TokenUtils.generateToken();
+        String participantToken = TokenUtils.generateToken();
 
-        String participantTokenHash =
-                TokenUtils.hashToken(participantToken);
+        String participantTokenHash = TokenUtils.hashToken(participantToken);
 
         participant.setParticipantTokenHash(
-                participantTokenHash
-        );
+                participantTokenHash);
 
-        Participant savedParticipant =
-                participantRepository.save(participant);
+        Participant savedParticipant = participantRepository.save(participant);
 
         return new CreatedParticipantResult(
                 savedParticipant.getId(),
-                participantToken
-        );
+                participantToken);
+    }
+
+    public ParticipantResponse getCurrentParticipant(
+            Long groupId,
+            String participantToken) {
+        String participantTokenHash = TokenUtils.hashToken(participantToken);
+
+        Participant participant = participantRepository
+                .findByGroupIdAndParticipantTokenHash(
+                        groupId,
+                        participantTokenHash)
+                .orElseThrow();
+
+        return new ParticipantResponse(
+                participant.getId(),
+                participant.getName(),
+                participant.isActive());
     }
 }
