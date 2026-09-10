@@ -1,65 +1,62 @@
 # WeCanMeet
 
-A web app for finding the best meeting time for a group based on everyone's availability.
-
-## The Idea
-
-Instead of choosing a few predefined time slots and asking everyone to vote, WeCanMeet allows a group to define a relevant date range.
-
-Each participant provides their availability manually or by connecting their Google Calendar, and the system finds and ranks the best meeting times automatically.
+WeCanMeet is a guest-first web app for finding the best meeting time for a group based on everyone's availability.
 
 ## MVP
 
-* Create a group as a guest
-* Define a group name and relevant date range
-* Share an invite link with participants
-* Join a group without creating an account
-* Add availability manually
-* Sync availability with Google Calendar
-* Edit previously submitted availability
-* View participants and their submission status
-* Automatically calculate the best common meeting times
-* Filter the suggested results
-* Edit group details
-* Open or close the invite link
+- Create a group without an account
+- Define a date range and minimum meeting duration
+- Share a group link
+- Join as a guest
+- Add and edit availability
+- Identify returning participants
+- View participant submission status
+- Calculate and rank the best common meeting times
+- Close a group to new submissions
+- Google Calendar sync
 
-## Current Tech Stack
+## Tech Stack
 
 ### Frontend
-
-* React
-* TypeScript
+- React
+- JavaScript
+- Vite
 
 ### Backend
-
-* Java
-* Spring Boot
-* Maven
+- Java
+- Spring Boot
+- Maven
 
 ### Database
+- PostgreSQL
+- Spring Data JPA
 
-* PostgreSQL
-* Spring Data JPA
-
-### External Integration
-
-* Google OAuth 2.0
-* Google Calendar API
-
-### Later
-
-* Docker
-* Automated testing
-* Deployment
+### Security
+- Secure admin and participant tokens
+- SHA-256 token hashing
+- HttpOnly cookies
 
 ## Main Data Model
 
-* **Group** — the meeting group and its date range
-* **Participant** — a guest participating in a specific group
-* **Availability** — one or more availability windows belonging to a participant
+- **Group** — group details, date range, meeting duration, active status
+- **Participant** — guest participant belonging to a group
+- **Availability** — participant availability windows
 
-A participant is currently identified only within a specific group. User accounts may be added in a future version.
+## Current Status
 
-## Project Status
+Completed:
+- Core frontend
+- Group creation and retrieval
+- Group closing with admin authorization
+- Participant creation
+- Returning participant identification
 
-🚧 In development — initial backend setup.
+In progress:
+- Availability backend
+
+Next:
+- Matching and ranking logic
+- Frontend-backend integration
+- Validation and error handling
+- Testing
+- Docker and deployment
