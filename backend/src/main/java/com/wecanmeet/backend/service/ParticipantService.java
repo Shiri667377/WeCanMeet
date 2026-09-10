@@ -78,4 +78,16 @@ public class ParticipantService {
                 participant.getName(),
                 participant.isActive());
     }
+
+    public Participant getCurrentParticipantEntity(
+            Long groupId,
+            String participantToken) {
+        String participantTokenHash = TokenUtils.hashToken(participantToken);
+
+        return participantRepository
+                .findByGroupIdAndParticipantTokenHash(
+                        groupId,
+                        participantTokenHash)
+                .orElseThrow();
+    }
 }
