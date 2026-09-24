@@ -8,6 +8,8 @@ import java.util.List;
 public interface AvailabilityEntryRepository
         extends JpaRepository<AvailabilityEntry, Long> {
 
+    List<AvailabilityEntry> findByParticipantGroupId(Long groupId);
+
     List<AvailabilityEntry> findByParticipantId(Long participantId);
 
     void deleteByParticipantId(Long participantId);
